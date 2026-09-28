@@ -1,8 +1,10 @@
 from .literal import Literal
 import typing
+from .formula import Formula
+from .propositional_variable import PropositionalVariable
+from .truth_assignment import TruthAssignment
 
-
-class Clause:
+class Clause(Formula):
     def __init__(
             self,
             literals:list[Literal]|None=None,
@@ -22,7 +24,7 @@ class Clause:
         return set(self.literals) == set(other.literals)
 
 
-    def to_latex(self):
+    def to_latex(self)->str:
         seperator = r' \lor ' if self.clause_type == 'Disjunctive' else r' \land '
         return seperator.join(f'{str(literal)}' for literal in self.literals)
 
@@ -35,3 +37,22 @@ class Clause:
 
     def _repr_latex_(self):
         return f'${self.to_latex()}$'
+
+    def evaluate(self, truth_assignment:TruthAssignment)->bool:
+        assigned_truth = truth_assignment.get_truth_values([literal.prop_var for literal in self.literals])
+        if self.clause_type == 'Disjunctive':
+            return all(assigned_truth)
+        else:
+            return any(assigned_truth)
+
+    def get_prop_vars(self) ->list[PropositionalVariable]:
+        prop_vars = []
+        for literal in self.literals:
+            prop_vars.extend(literal.get_prop_vars())
+        return prop_vars
+
+    def satisfy(self)->TruthAssignment:
+        ta = TruthAssignment()
+        for literal in self.literals:
+            ta.set_truth_assignment(literal.satisfy())
+        return ta
