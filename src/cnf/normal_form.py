@@ -55,6 +55,26 @@ class NormalForm(Formula):
                 clause_obj.literals.append(literal_obj)
             self.clauses.append(clause_obj)
 
+    def parse_dimacs(self, path:str)->None:
+        with open(path,'r') as file:
+            prop_vars = []
+            for line in file:
+                if 'c' == line[0]:
+                    continue
+                elif line[0] == 'p':
+                    _, _, v, _ = line.split()
+                    var_count = int(v)
+                    for i in range(1, var_count + 1):
+                        prop_vars.append(PropositionalVariable(f'p{i}'))
+                else:
+                    clause = Clause()
+                    for i in line.split()[:-1]:
+                        i = int(i)
+                        prop_var = PropositionalVariable(f'p{abs(i)}')
+                        literal = Literal(prop_var, i < 0)
+                        clause.literals.append(literal)
+                    self.clauses.append(clause)
+
     def to_latex(self)->str:
         if self.normal_form_type == 'Conjunctive':
             seperator = r' \land '
