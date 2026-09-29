@@ -22,10 +22,12 @@ class Literal(Formula):
     def to_latex(self)->str:
         match = re.fullmatch(r'([A-Za-z]+)(\d+)', self.prop_var.name)
         if match is None:
+            if self.is_negated:
+                return rf'\lnot {self.prop_var.name}'
             return f'{self.prop_var.name}'
         string, number = match.groups()
         if self.is_negated:
-            return rf'\lnot \ {string}_{{{number}}}'
+            return rf'\lnot {string}_{{{number}}}'
         return rf'{string}_{{{number}}}'
 
     def __str__(self) -> str:
@@ -34,6 +36,8 @@ class Literal(Formula):
     def __repr__(self)->str:
         match = re.fullmatch(r'([A-Za-z]+)(\d+)', self.prop_var.name)
         if match is None:
+            if self.is_negated:
+                return f'not {self.prop_var.name}'
             return f'${self.prop_var.name}$'
         string, number = match.groups()
         if self.is_negated:

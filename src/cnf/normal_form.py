@@ -91,10 +91,11 @@ class NormalForm(Formula):
 
 
     def evaluate(self, truth_assignment:TruthAssignment)->bool:
+        assigned_truth = [clause.evaluate(truth_assignment) for clause in self.clauses]
         if self.normal_form_type == 'Conjunctive':
-            return all([clause.evaluate(truth_assignment) for clause in self.clauses])
+            return all(assigned_truth)
         else:
-            return any([clause.evaluate(truth_assignment) for clause in self.clauses])
+            return any(assigned_truth)
 
     def satisfy(self)->TruthAssignment:
         ta = TruthAssignment()

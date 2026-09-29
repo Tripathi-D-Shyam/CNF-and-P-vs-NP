@@ -39,11 +39,11 @@ class Clause(Formula):
         return f'${self.to_latex()}$'
 
     def evaluate(self, truth_assignment:TruthAssignment)->bool:
-        assigned_truth = truth_assignment.get_truth_values([literal.prop_var for literal in self.literals])
+        assigned_truth = [literal.evaluate(truth_assignment) for literal in self.literals]
         if self.clause_type == 'Disjunctive':
-            return all(assigned_truth)
-        else:
             return any(assigned_truth)
+        else:
+            return all(assigned_truth)
 
     def get_prop_vars(self) ->list[PropositionalVariable]:
         prop_vars = []
